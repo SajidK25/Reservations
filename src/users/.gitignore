@@ -1,0 +1,23 @@
+# Node.js
+node_modules/
+dist/
+.env
+
+# Logs
+logs/
+*.log
+
+# DB
+pgdata/
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
