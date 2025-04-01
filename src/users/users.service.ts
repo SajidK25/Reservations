@@ -29,12 +29,10 @@ export class UsersService {
       throw new ConflictException('Korisnik s tim emailom već postoji.');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-   const result = await this.db.query(
-     'INSERT INTO users (name, email, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id, name, email, created_at',
-     [name, email, hashedPassword, 2],
-   );
+    const result = await this.db.query(
+      'INSERT INTO users (name, email, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id, name, email, created_at',
+      [name, email, password, 2],
+    );
 
     return result.rows[0];
   }
