@@ -3,16 +3,31 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    'postgresql://postgres:postgres@base:5432/reservations',
-});
+let pool: Pool;
 
+if (process.env.DATABASE_URL) {
+  console.log('🔌 Koristim DATABASE_URL (Render ili produkcija)');
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl:
+      process.env.DATABASE_SSL === 'true'
+        ? { rejectUnauthorized: false }
+        : false,
+  });
+} else {
+  console.log('🔌 Koristim lokalne DB varijable (.env)');
+  pool = new Pool({
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT || 5432),
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'postgres',
+    database: process.env.DB_NAME || 'reservations',
+  });
+}
 
 async function seed() {
   try {
-    console.log('Provjera i kreiranje tablica ako ne postoje...');
+    console.log('📦 Provjera i kreiranje tablica ako ne postoje...');
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS role (
@@ -57,7 +72,8 @@ async function seed() {
     `);
 
     console.log('Tablice su spremne.');
-    console.log('Ubacivanje početnih podataka...');
+
+    console.log('Ubacujem početne podatke...');
 
     const roles = ['admin', 'user'];
     for (const role of roles) {
@@ -72,7 +88,6 @@ async function seed() {
     const spaceCheck = await pool.query(`SELECT * FROM space WHERE name = $1`, [
       'Main Hall',
     ]);
-
     if (spaceCheck.rowCount === 0) {
       await pool.query(`INSERT INTO space (name) VALUES ($1)`, ['Main Hall']);
     }
