@@ -6,7 +6,7 @@ dotenv.config();
 let pool: Pool;
 
 if (process.env.DATABASE_URL) {
-  console.log('🔌 Koristim DATABASE_URL (Render ili produkcija)');
+  console.log('Koristim DATABASE_URL (Render ili produkcija)');
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl:
@@ -15,7 +15,7 @@ if (process.env.DATABASE_URL) {
         : false,
   });
 } else {
-  console.log('🔌 Koristim lokalne DB varijable (.env)');
+  console.log('Koristim lokalne DB varijable (.env)');
   pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 5432),
