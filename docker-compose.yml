@@ -1,16 +1,38 @@
 version: '3.8'
+
 services:
+  backend:
+    build: .
+    container_name: nest-backend
+    ports:
+      - '3000:3000'
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=reservations
+      - JWT_SECRET=tajna123
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+
   postgres:
     image: postgres:15
-    container_name: reservations-db
+    container_name: postgres-db
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reservations
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
 
 volumes:
   pgdata:
+
