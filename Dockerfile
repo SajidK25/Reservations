@@ -17,7 +17,8 @@ COPY . .
 RUN npm run build
 
 # 7. Pokreni aplikaciju
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "node dist/seed/seed.js && node dist/main"]
+
 
 # 8. Otvori port
 EXPOSE 3000
