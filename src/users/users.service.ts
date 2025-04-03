@@ -5,7 +5,6 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { Pool } from 'pg';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +29,7 @@ export class UsersService {
     }
 
     const result = await this.db.query(
-      'INSERT INTO users (name, email, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id, name, email, created_at',
+      'INSERT INTO USERS (name, email, password, role_id) VALUES ($1, $2, $3, $4) RETURNING id, name, email, created_at',
       [name, email, password, 2],
     );
 
@@ -38,14 +37,14 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    const result = await this.db.query('SELECT * FROM users WHERE email = $1', [
+    const result = await this.db.query('SELECT * FROM USERS WHERE email = $1', [
       email,
     ]);
     return result.rows[0];
   }
 
   async findAll() {
-    const result = await this.db.query('SELECT * FROM users');
+    const result = await this.db.query('SELECT * FROM USERS');
     return result.rows;
   }
 }

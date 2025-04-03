@@ -10,27 +10,37 @@ import { Pool } from 'pg';
 export class ReservationsService {
   constructor(@Inject('PG') private readonly db: Pool) {}
 
-  async create(userId: number, appointmentId: number) {
+  async create(
+    userId: number,
+    spaceId: number,
+    startDate: string,
+    endTime: string,
+  ) {
     try {
-      // Provjeri dostupnost termina
-      const { rows } = await this.db.query(
-        'SELECT * FROM appointments WHERE id = $1 AND available = true',
-        [appointmentId],
+      // Provjera preklapanja termina
+      const overlap = await this.db.query(
+        `
+        SELECT 1 FROM reservation
+        WHERE space_id = $1
+          AND (($2, $3) OVERLAPS (start_date, end_time))
+        `,
+        [spaceId, startDate, endTime],
       );
 
-      if (rows.length === 0) {
-        throw new BadRequestException('Termin nije dostupan.');
+      if (overlap.rows.length > 0) {
+        throw new BadRequestException(
+          'Termin za taj prostor je već rezerviran.',
+        );
       }
 
-      // Napravi rezervaciju
-      await this.db.query(
-        'UPDATE appointments SET available = false, updated_at = NOW() WHERE id = $1',
-        [appointmentId],
-      );
-
+      // Spremi rezervaciju
       const result = await this.db.query(
-        'INSERT INTO reservations (user_id, appointment_id) VALUES ($1, $2) RETURNING *',
-        [userId, appointmentId],
+        `
+        INSERT INTO reservation (user_id, space_id, start_date, end_time, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        RETURNING *;
+        `,
+        [userId, spaceId, startDate, endTime],
       );
 
       return result.rows[0];
@@ -44,17 +54,43 @@ export class ReservationsService {
     try {
       const result = await this.db.query(
         `
-        SELECT r.*, a.time 
-        FROM reservations r
-        JOIN appointments a ON r.appointment_id = a.id
+        SELECT r.*, s.name AS space_name
+        FROM reservation r
+        JOIN space s ON r.space_id = s.id
         WHERE r.user_id = $1
-        ORDER BY a.time ASC
+        ORDER BY r.start_date ASC
         `,
         [userId],
       );
       return result.rows;
     } catch (err) {
-      console.error('Greška kod dohvaćanja rezervacija:', err);
+      console.error('Greška kod dohvaćanja korisničkih rezervacija:', err);
+      throw new InternalServerErrorException(
+        'Neuspješno dohvaćanje rezervacija.',
+      );
+    }
+  }
+
+  async findAll() {
+    try {
+      const result = await this.db.query(
+        `
+        SELECT 
+          r.id AS reservation_id,
+          r.start_date,
+          r.end_time,
+          r.created_at,
+          u.name AS user_name,
+          s.name AS space_name
+        FROM reservation r
+        JOIN users u ON r.user_id = u.id
+        JOIN space s ON r.space_id = s.id
+        ORDER BY r.created_at DESC
+        `,
+      );
+      return result.rows;
+    } catch (err) {
+      console.error('Greška kod dohvaćanja svih rezervacija:', err);
       throw new InternalServerErrorException(
         'Neuspješno dohvaćanje rezervacija.',
       );
