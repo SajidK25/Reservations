@@ -1,4 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base;       /* Loads Tailwind’s base styles (like resets) */
+@tailwind components; /* Includes any custom component classes */
+@tailwind utilities;  /* Enables Tailwind utility classes */
 
+/* Prevent autofill from overriding dark input styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  /* Force dark background inside autofilled inputs */
+  -webkit-box-shadow: 0 0 0px 1000px #1f2937 inset !important; /* Tailwind bg-gray-800 */
+
+  /* Ensure autofilled text stays white */
+  -webkit-text-fill-color: #ffffff !important;
+
+  /* delay autofill background flash */
+  transition: background-color 5000s ease-in-out 0s;
+}
