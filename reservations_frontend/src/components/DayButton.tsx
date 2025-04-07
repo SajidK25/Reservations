@@ -17,8 +17,6 @@ export default function DayButton({
 
   const baseClasses =
     "rounded-xl h-24 sm:h-24 flex flex-col items-center justify-start pt-2 transition duration-200 text-base sm:text-base font-base";
-
-
   return (
     <button
       onClick={onClick}

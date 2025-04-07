@@ -111,7 +111,9 @@ export default function Home() {
         ))}
       </div>
 
-      {showForm && selectedDate && <ReservationForm onClose={closeForm} />}
+      {showForm && selectedDate && (
+        <ReservationForm onClose={closeForm} selectedDate={selectedDate} />
+      )}
     </div>
   );
 }
