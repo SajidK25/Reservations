@@ -38,16 +38,16 @@ export default function ReservationForm({
   onClose,
   selectedDate,
 }: ReservationFormProps) {
- const [formData, setFormData] = useState({
-   name: "",
-   phone: "",
-   date: selectedDate,
-   startTime: "",
-   endTime: "",
-   guests: 1,
-   place: "",
-   requests: "",
- });
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    date: selectedDate,
+    startTime: "",
+    endTime: "",
+    guests: 1,
+    place: "",
+    requests: "",
+  });
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -60,7 +60,6 @@ export default function ReservationForm({
       [name]: name === "guests" ? Number(value) : value,
     }));
   };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,127 +95,125 @@ export default function ReservationForm({
         </div>
 
         {/* Form */}
-       <div className="relative p-6 sm:p-10 flex flex-col h-full">
-  <button
-    onClick={onClose}
-    className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl"
-  >
-    &times;
-  </button>
+        <div className="relative p-6 sm:p-10 flex flex-col h-full">
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl"
+          >
+            &times;
+          </button>
 
-  <form
-    onSubmit={handleSubmit}
-    className="flex flex-col gap-6 flex-grow overflow-y-auto pr-1 pt-10"
-  >
-    {/* Grid Inputs */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {/* Name */}
-      <div>
-        <label className="block mb-1 text-sm font-medium text-gray-300">
-          Name
-        </label>
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-6 flex-grow overflow-y-auto pr-1 pt-10"
+          >
+            {/* Grid Inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
+              {/* Name */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-300">
+                  Name
+                </label>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-      {/* Phone */}
-      <div>
-        <label className="block mb-1 text-sm font-medium text-gray-300">
-          Phone Number
-        </label>
-        <input
-          name="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+              {/* Phone */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-300">
+                  Phone Number
+                </label>
+                <input
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-      {/* Date */}
-      <div>
-        <label className="block mb-1 text-sm font-medium text-gray-300">
-          Date
-        </label>
-        <input
-          type="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+              {/* Date */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-300">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-      {/* Guests */}
-      <div>
-        <label className="block mb-1 text-sm font-medium text-gray-300">
-          Guests
-        </label>
-        <input
-          type="number"
-          name="guests"
-          min="1"
-          value={formData.guests}
-          onChange={handleChange}
-          required
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+              {/* Guests */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-300">
+                  Guests
+                </label>
+                <input
+                  type="number"
+                  name="guests"
+                  min="1"
+                  value={formData.guests}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-      {/* Place Selector */}
-      <div className="sm:col-span-2">
-        <label className="block mb-1 text-sm font-medium text-gray-300">
-          Select Table / Place
-        </label>
-        <select
-          name="place"
-          onChange={handleChange}
-          className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Choose a place...</option>
-          <option value="window">Window Table</option>
-          <option value="center">Center Table</option>
-          <option value="patio">Patio</option>
-          <option value="vip">VIP Room</option>
-        </select>
-      </div>
-    </div>
+              {/* Place Selector */}
+              <div className="sm:col-span-2">
+                <label className="block mb-1 text-sm font-medium text-gray-300">
+                  Select Table / Place
+                </label>
+                <select
+                  name="place"
+                  onChange={handleChange}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Choose a place...</option>
+                  <option value="window">Window Table</option>
+                  <option value="center">Center Table</option>
+                  <option value="patio">Patio</option>
+                  <option value="vip">VIP Room</option>
+                </select>
+              </div>
+            </div>
 
-    {/* Special Requests */}
-    <div>
-      <label className="block mb-1 text-sm font-medium text-gray-300">
-        Special Requests
-      </label>
-      <textarea
-        name="requests"
-        value={formData.requests}
-        onChange={handleChange}
-        rows={3}
-        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
+            {/* Special Requests */}
+            <div className="p-1">
+              <label className="block mb-1 text-sm font-medium text-gray-300">
+                Special Requests
+              </label>
+              <textarea
+                name="requests"
+                value={formData.requests}
+                onChange={handleChange}
+                rows={3}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-    {/* Submit Button */}
-    <div className="pt-4">
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 active:scale-95 transition duration-150 font-semibold"
-      >
-        Submit Reservation
-      </button>
-    </div>
-  </form>
-</div>
-
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition duration-150 font-semibold"
+              >
+                Submit Reservation
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-  
+    </div>
   );
 }
