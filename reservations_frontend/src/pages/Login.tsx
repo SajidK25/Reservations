@@ -1,18 +1,33 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../api/authApi";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
-    alert("Logged in!");
+    setLoading(true);
+
+    try {
+      await loginUser(formData); 
+      navigate("/"); 
+    } catch (error: any) {
+      console.error("Login failed:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Login failed. Please check your credentials."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,9 +66,10 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 transition duration-200 py-2 rounded-lg font-semibold"
           >
-            Log In
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-gray-400">
