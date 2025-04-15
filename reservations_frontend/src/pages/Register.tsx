@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { registerUser } from "../api/authApi";
+import { useNavigate } from "react-router-dom"; 
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,15 +17,29 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-    console.log("Registration submitted:", formData);
-    alert("Account created!");
+
+    try {
+      console.log("Registering...", formData);
+      await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+      alert("Account created successfully!");
+      
+      navigate("/login")
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      alert(error?.response?.data?.message || "Registration failed.");
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4">

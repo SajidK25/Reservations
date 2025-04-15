@@ -45,7 +45,7 @@ export default function TimePicker({
   return (
     <div
       ref={containerRef}
-      className="h-full overflow-y-auto flex flex-col-reverse gap-2 pr-1 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent"
+      className="h-full overflow-y-auto flex flex-col-reverse gap-1 p-1 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent"
     >
       {times.map((time) => (
         <button

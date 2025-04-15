@@ -1,5 +1,6 @@
 import { useState } from "react";
-import TimePicker from "./TimePicker"; // This is the time picker component below
+import TimePicker from "./TimePicker";
+import { createReservation } from "../api/reservationsApi";
 
 interface ReservationFormProps {
   onClose: () => void;
@@ -61,11 +62,17 @@ export default function ReservationForm({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Reservation submitted:", formData);
-    alert("Reservation submitted!");
-    onClose();
+    try {
+      console.log("Sending reservation...", formData);
+      await createReservation(formData);
+      alert("Reservation submitted!");
+      onClose();
+    } catch (error: any) {
+      console.error("Reservation failed:", error);
+      alert("Failed to submit reservation. Please try again.");
+    }
   };
 
   return (
