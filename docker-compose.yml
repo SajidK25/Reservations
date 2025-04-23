@@ -4,7 +4,7 @@ services:
   frontend:
     build: ./reservations_frontend
     ports:
-      - "3000:80"  # Frontend available at localhost:3000
+      - "3000:80" # Frontend available at localhost:3000
     depends_on:
       - backend
 
@@ -12,7 +12,7 @@ services:
     build: ./reservations_backend
     container_name: nest-backend
     ports:
-      - "4000:3000"  # NestJS app runs on 3000 inside container, exposed as 4000 locally
+      - "4000:3000" # NestJS app runs on 3000 inside container, exposed as 4000 locally
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -29,18 +29,17 @@ services:
     command: npm run start:dev
 
   postgres:
-    image: postgres:15
+    image: postgres:17
     container_name: postgres-db
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: reservations
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - reservations-backend_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  reservations-backend_pgdata:
-            external: true
+  pgdata:
