@@ -3,6 +3,7 @@ import ReservationForm from "../components/ReservationForm";
 import CalendarGrid from "../components/CalendarGrid";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -61,6 +62,7 @@ export default function Home() {
           <ReservationForm onClose={closeForm} selectedDate={selectedDate} />
         )}
       </main>
+      <Footer />
     </div>
   );
 }
