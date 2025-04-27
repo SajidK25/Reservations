@@ -2,20 +2,14 @@ import { useState } from "react";
 import ReservationForm from "../components/ReservationForm";
 import CalendarGrid from "../components/CalendarGrid";
 import Header from "../components/Header";
-import { useNavigate } from "react-router-dom";
+
 import Footer from "../components/Footer";
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const navigate = useNavigate();
 
-  const logout = () => {
-    sessionStorage.removeItem("access_token");
-    alert("Logged out!");
-    navigate("/login");
-  };
 
   const handleDayClick = (date: string) => {
     setSelectedDate(date);
@@ -45,7 +39,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900">
-      <Header onLogout={logout} />
+      <Header/>
 
       <main className="px-4 py-10">
         <div className="max-w-4xl mx-auto">
