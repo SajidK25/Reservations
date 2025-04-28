@@ -10,6 +10,7 @@ import { ReservationsService } from './reservations.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 
+
 @Controller('reservations')
 @UseGuards(AuthGuard('jwt'))
 export class ReservationsController {
@@ -19,9 +20,8 @@ export class ReservationsController {
   async reserve(@Request() req, @Body() body: CreateReservationDto) {
     return this.reservationsService.create(
       req.user.id,
-      body.spaceId,
       body.startDate,
-      body.endTime,
+      body.endDate,
     );
   }
 

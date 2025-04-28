@@ -8,10 +8,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Create a new reservation
 export const createReservation = async (data: any) => {
-  const response = await api.post("/", data);
+  const response = await api.post("/reservations", data);
   return response.data;
-};
+}
 
 export const getReservation = async (id: string) => {
   const response = await api.get(`/GET_RESERVATION?id=${id}`);

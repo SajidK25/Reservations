@@ -10,37 +10,15 @@ import { Pool } from 'pg';
 export class ReservationsService {
   constructor(@Inject('PG') private readonly db: Pool) {}
 
-  async create(
-    userId: number,
-    spaceId: number,
-    startDate: string,
-    endTime: string,
-  ) {
+  async create(userId: number, startDate: string, endDate: string) {
     try {
-      // Provjera preklapanja termina
-      const overlap = await this.db.query(
-        `
-        SELECT 1 FROM reservation
-        WHERE space_id = $1
-          AND (($2, $3) OVERLAPS (start_date, end_time))
-        `,
-        [spaceId, startDate, endTime],
-      );
-
-      if (overlap.rows.length > 0) {
-        throw new BadRequestException(
-          'Termin za taj prostor je već rezerviran.',
-        );
-      }
-
-      // Spremi rezervaciju
       const result = await this.db.query(
         `
-        INSERT INTO reservation (user_id, space_id, start_date, end_time, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        INSERT INTO reservations (user_id, start_date, end_date, created_at, updated_at)
+                               VALUES ($1,         $2,       $3,      NOW(),       NOW())
         RETURNING *;
         `,
-        [userId, spaceId, startDate, endTime],
+        [userId, startDate, endDate],
       );
 
       return result.rows[0];
@@ -55,8 +33,7 @@ export class ReservationsService {
       const result = await this.db.query(
         `
         SELECT r.*, s.name AS space_name
-        FROM reservation r
-        JOIN space s ON r.space_id = s.id
+        FROM reservations r
         WHERE r.user_id = $1
         ORDER BY r.start_date ASC
         `,
@@ -78,13 +55,11 @@ export class ReservationsService {
         SELECT 
           r.id AS reservation_id,
           r.start_date,
-          r.end_time,
+          r.end_date,
           r.created_at,
-          u.name AS user_name,
-          s.name AS space_name
-        FROM reservation r
+          u.name AS user_name
+        FROM reservations r
         JOIN users u ON r.user_id = u.id
-        JOIN space s ON r.space_id = s.id
         ORDER BY r.created_at DESC
         `,
       );
