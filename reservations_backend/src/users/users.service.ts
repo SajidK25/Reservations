@@ -36,6 +36,13 @@ export class UsersService {
     return result.rows[0];
   }
 
+  async findOne(id: number) {
+    const result = await this.db.query('SELECT * FROM USERS WHERE id = $1', [
+      id,
+    ]);
+    return result.rows;
+  }
+
   async findByEmail(email: string) {
     const result = await this.db.query('SELECT * FROM USERS WHERE email = $1', [
       email,
@@ -46,5 +53,54 @@ export class UsersService {
   async findAll() {
     const result = await this.db.query('SELECT * FROM USERS');
     return result.rows;
+  }
+
+  async delete(id: number) {
+    const result = await this.db.query(
+      `DELETE FROM users WHERE id = $1 RETURNING *`,
+      [id],
+    );
+    if (result.rowCount === 0) {
+      throw new BadRequestException(`Korisnik s ID-em ${id} ne postoji.`);
+    }
+    return { message: `Korisnik ${id} je obrisan.` };
+  }
+
+  async update(
+    id: number,
+    data: { name?: string; email?: string; password?: string },
+  ) {
+    const fields: string[] = [];
+    const values: (string | number)[] = [];
+    let index = 1;
+
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined && value !== null && `${value}`.trim() !== '') {
+        fields.push(`${key} = $${index++}`);
+        values.push(value);
+      }
+    }
+
+    if (fields.length === 0) {
+      throw new BadRequestException('Nema podataka za ažuriranje.');
+    }
+
+    values.push(id);
+
+    const result = await this.db.query(
+      `
+    UPDATE users
+    SET ${fields.join(', ')}, updated_at = NOW()
+    WHERE id = $${index}
+    RETURNING *;
+    `,
+      values,
+    );
+
+    if (result.rowCount === 0) {
+      throw new BadRequestException(`Korisnik s ID-em ${id} ne postoji.`);
+    }
+
+    return result.rows[0];
   }
 }
