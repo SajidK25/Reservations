@@ -1,16 +1,26 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReservationForm from "../components/ReservationForm";
 import CalendarGrid from "../components/CalendarGrid";
 import Header from "../components/Header";
 
 import Footer from "../components/Footer";
+import { useReservationStore } from "../store/reservationStore";
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
+  const { reservations, getAllReservations, loading } = useReservationStore();
 
+  const fetchReservations = useCallback(() => {
+    getAllReservations();
+  }, [getAllReservations]);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
+  
   const handleDayClick = (date: string) => {
     setSelectedDate(date);
     setShowForm(true);
@@ -39,16 +49,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900">
-      <Header/>
+      <Header />
 
       <main className="px-4 py-10">
         <div className="max-w-4xl mx-auto">
           <CalendarGrid
             currentMonth={currentMonth}
-            onSelectDate={handleDayClick}
+            onAddReservation={handleDayClick}
             selectedDate={selectedDate}
             goToPreviousMonth={goToPreviousMonth}
             goToNextMonth={goToNextMonth}
+            reservations={reservations}
+            //loading={loading}
           />
         </div>
 

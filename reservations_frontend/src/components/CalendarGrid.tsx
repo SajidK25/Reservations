@@ -1,20 +1,22 @@
-// components/CalendarGrid.tsx
-import DayButton from "./DayButton";
+import { Reservation } from "../types/reservation";
+import DayCard from "./DayCard";
 
 interface CalendarGridProps {
   currentMonth: Date;
-  onSelectDate: (date: string) => void;
+  onAddReservation: (date: string) => void;
   selectedDate: string | null;
   goToPreviousMonth: () => void;
   goToNextMonth: () => void;
+  reservations: Record<string, Reservation[]>;
 }
 
 export default function CalendarGrid({
   currentMonth,
   selectedDate,
-  onSelectDate,
+  onAddReservation,
   goToPreviousMonth,
   goToNextMonth,
+  reservations,
 }: CalendarGridProps) {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -78,15 +80,16 @@ export default function CalendarGrid({
                 .toISOString()
                 .split("T")[0];
               const isSelected = selectedDate === fullDate;
-
+              const dayReservations = reservations[fullDate] || [];
               return (
-                <DayButton
+                <DayCard
                   key={j}
                   day={day}
-                  onClick={() => onSelectDate(fullDate)}
+                  onAddReservation={() => onAddReservation(fullDate)}
                   isSelected={isSelected}
                   year={year}
                   month={month}
+                  reservations={dayReservations}
                 />
               );
             } else {
