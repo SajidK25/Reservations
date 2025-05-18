@@ -16,5 +16,15 @@ export const loginUser = async (credentials: {
   const response = await api.post("/auth/login", credentials);
   const { access_token } = response.data;
   sessionStorage.setItem("access_token", access_token);
-  return access_token;
+
+  const userResponse = await api.get("/auth/profile", {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return userResponse.data; 
+};
+
+export const fetchCurrentUser = async () => {
+  const response = await api.get("/auth/profile");
+  return response.data;
 };

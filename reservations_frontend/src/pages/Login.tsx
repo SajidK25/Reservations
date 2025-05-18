@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../api/authApi";
+import { useAuthStore } from "../store/authStore";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+
+  const login = useAuthStore((state) => state.login);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -17,10 +19,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await loginUser(formData); 
+      await login(formData); 
       navigate("/"); 
     } catch (error: any) {
-      console.error("Login failed:", error);
       alert(
         error?.response?.data?.message ||
           "Login failed. Please check your credentials."
