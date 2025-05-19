@@ -8,12 +8,11 @@ export default function AddReservationBtn({
   return (
     <button
       className="
-          w-8 h-8
+          w-9 h-9
           rounded-full
           bg-black
           text-white
           flex items-center justify-center
-          opacity-0 group-hover:opacity-100
           shadow
           z-10
           transition-all duration-200

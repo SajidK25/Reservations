@@ -17,7 +17,7 @@ export default function DayCard({
   reservations = [],
 }: DayCardProps) {
   const baseClasses =
-    "rounded-xl h-24 sm:h-24 flex flex-col items-center justify-start pt-2 transition duration-200 text-base sm:text-base font-base";
+    "rounded-xl h-24 sm:h-27 flex flex-col items-center justify-start py-1 transition duration-200 text-base sm:text-base font-base";
   return (
     <div
       className={`
@@ -26,7 +26,7 @@ export default function DayCard({
         ${baseClasses} text-white
       `}
     >
-      <div className="text-lg font-semibold h-fit">{day}</div>
+      <div className="text-md font-semibold h-5">{day}</div>
       <div className="flex flex-col w-full mt-1 px-1 gap-1">
         {reservations.map((reservation) => (
           <div
@@ -38,6 +38,7 @@ export default function DayCard({
           </div>
         ))}
       </div>
+
       <AddReservationBtn onAddReservation={onAddReservation} />
     </div>
   );

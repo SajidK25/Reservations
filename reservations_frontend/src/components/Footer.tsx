@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="text-center text-gray-400 text-sm py-2 mt-10 border-t border-gray-700">
+    <footer className="text-center text-gray-400 text-sm py-2 mt-3 border-t border-gray-700">
       <p>
         © {new Date().getFullYear()} —{" "}
         <a

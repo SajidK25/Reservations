@@ -48,10 +48,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900">
+    <div className="min-h-screen flex justify-between flex-col bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 ">
       <Header />
 
-      <main className="px-4 py-10">
+      <main className="px-4 py-4">
         <div className="max-w-4xl mx-auto">
           <CalendarGrid
             currentMonth={currentMonth}

@@ -43,9 +43,9 @@ export default function CalendarGrid({
   const monthName = currentMonth.toLocaleString("default", { month: "long" });
 
   return (
-    <div className="bg-gray-900 rounded-2xl shadow-xl p-2 sm:p-6 text-white">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">
+    <div className="bg-gray-900 rounded-2xl shadow-xl sm:p-6 text-white">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl sm:text-2xl font-bold">
           {monthName} {year}
         </h1>
         <div className="flex gap-2">
