@@ -11,7 +11,7 @@ export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const { reservations, getAllReservations, loading } = useReservationStore();
+  const { reservations, getAllReservations } = useReservationStore();
 
   const fetchReservations = useCallback(() => {
     getAllReservations();
@@ -60,7 +60,6 @@ export default function Home() {
             goToPreviousMonth={goToPreviousMonth}
             goToNextMonth={goToNextMonth}
             reservations={reservations}
-            //loading={loading}
           />
         </div>
 
