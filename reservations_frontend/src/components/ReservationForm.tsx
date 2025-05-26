@@ -1,6 +1,8 @@
 import { useState } from "react";
 import TimePicker from "./TimePicker";
 import { createReservation } from "../api/reservationsApi";
+import { useAuthStore } from "../store/authStore";
+import { useReservationStore } from "../store/reservationStore";
 
 interface ReservationFormProps {
   onClose: () => void;
@@ -49,6 +51,10 @@ export default function ReservationForm({
     place: "",
     requests: "",
   });
+  const { user } = useAuthStore();
+  const { getAllReservations } = useReservationStore();
+
+  const [errors, setErrors] = useState<{ time?: string }>({});
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -64,14 +70,30 @@ export default function ReservationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.startTime || !formData.endTime) {
+      setErrors({ time: "Vrijeme početka i završetka je obavezno." });
+      return;
+    }
+
+    setErrors({});
+    const userId = user ? user.id : 1;
+    const completeData = {
+      ...formData,
+      startDate: new Date(
+        `${selectedDate}T${formData.startTime}`
+      ).toISOString(),
+      endDate: new Date(`${selectedDate}T${formData.endTime}`).toISOString(),
+      userId,
+    };
+
     try {
-      console.log("Sending reservation...", formData);
-      await createReservation(formData);
-      alert("Reservation submitted!");
+      await createReservation(completeData);
+      await getAllReservations();
+      alert("Rezervacija poslana!");
       onClose();
     } catch (error: any) {
-      console.error("Reservation failed:", error);
-      alert("Failed to submit reservation. Please try again.");
+      alert("Neuspješno slanje rezervacije. Pokušajte ponovno.");
     }
   };
 
@@ -90,18 +112,18 @@ export default function ReservationForm({
                 startTime={formData.startTime}
                 endTime={formData.endTime}
                 onChange={(start, end) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    startTime: start,
-                    endTime: end,
-                  }))
+                  setFormData({ ...formData, startTime: start, endTime: end })
                 }
+                error={errors.time}
               />
+
+              {errors.time && (
+                <p className="text-red-500 text-xs mt-1">{errors.time}</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Form */}
         <div className="relative p-6 sm:p-10 flex flex-col h-full">
           <button
             onClick={onClose}
@@ -114,7 +136,6 @@ export default function ReservationForm({
             onSubmit={handleSubmit}
             className="flex flex-col gap-6 flex-grow overflow-y-auto pr-1 pt-10"
           >
-            {/* Grid Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
               {/* Name */}
               <div>
