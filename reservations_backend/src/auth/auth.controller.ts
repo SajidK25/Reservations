@@ -27,7 +27,6 @@ export class AuthController {
     return this.authService.register(body.name, body.email, body.password);
   }
 
-  // Zaštićena ruta – vraća podatke iz tokena
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Request() req) {

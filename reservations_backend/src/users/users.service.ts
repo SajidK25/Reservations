@@ -74,6 +74,16 @@ export class UsersService {
     const values: (string | number)[] = [];
     let index = 1;
 
+    if (data.email) {
+      const existing = await this.db.query(
+        'SELECT id FROM users WHERE email = $1 AND id != $2',
+        [data.email, id],
+      );
+      if (existing.rows.length > 0) {
+        throw new ConflictException('Email je već u upotrebi.');
+      }
+    }
+    
     for (const [key, value] of Object.entries(data)) {
       if (value !== undefined && value !== null && `${value}`.trim() !== '') {
         fields.push(`${key} = $${index++}`);

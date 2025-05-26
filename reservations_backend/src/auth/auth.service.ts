@@ -46,7 +46,6 @@ export class AuthService {
     }
 
     try {
-      // Provjera postoji li korisnik
       const existing = await this.usersService.findByEmail(email);
       if (existing) {
         throw new BadRequestException('Korisnik s tim emailom već postoji.');
