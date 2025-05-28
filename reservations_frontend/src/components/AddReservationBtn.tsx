@@ -8,16 +8,16 @@ export default function AddReservationBtn({
   return (
     <button
       className="
-          w-9 h-9
+          w-7 h-7
           rounded-full
-          bg-black
+          bg-blue-900
           text-white
           flex items-center justify-center
           shadow
           z-10
           transition-all duration-200
           hover:scale-110
-          hover:bg-gray-800
+          hover:bg-blue-900
           transform origin-center
           z-1000
         "
@@ -28,7 +28,7 @@ export default function AddReservationBtn({
       aria-label="Dodaj rezervaciju"
       type="button"
     >
-      <span className="text-xl leading-none">+</span>
+      <span className="text-lg leading-none">+</span>
     </button>
   );
 }

@@ -8,6 +8,7 @@ interface DayCardProps {
   year: number;
   month: number;
   reservations: Reservation[];
+  isOtherMonth?: boolean;
 }
 
 export default function DayCard({
@@ -15,23 +16,23 @@ export default function DayCard({
   onAddReservation,
   isSelected,
   reservations = [],
+  isOtherMonth = false,
 }: DayCardProps) {
-  const baseClasses =
-    "rounded-xl h-24 sm:h-27 flex flex-col items-center justify-start py-1 transition duration-200 text-base sm:text-base font-base";
+  const otherMonthClasses = "text-gray-300 opacity-30 cursor-not-allowed";
+
   return (
     <div
-      className={`
-        ${isSelected ? "bg-blue-700" : "bg-gray-800 hover:bg-blue-600"}
-       "border-2 border-blue-400"
-        ${baseClasses} text-white
+      className={`rounded-xl h-full  flex flex-col items-center justify-between transition duration-200 text-base py-1 sm:text-base font-base  text-white
+        ${isSelected ? "bg-blue-700" : "bg-gray-700 hover:bg-blue-600"}
+         ${isOtherMonth ? otherMonthClasses : ""}
       `}
     >
-      <div className="text-md font-semibold h-5">{day}</div>
-      <div className="flex flex-col w-full mt-1 px-1 gap-1">
+      <div className="text-sm font-semibold">{day}</div>
+      <div className="flex flex-col flex-1 justify-start w-full mt-1 px-1 gap-1">
         {reservations.map((reservation) => (
           <div
             key={reservation.id}
-            className="bg-blue-900 bg-opacity-60 rounded px-1 py-0.5 text-xs truncate"
+            className="bg-blue-900 bg-opacity-60 rounded px-1 text-[10px] truncate"
             title={reservation.created_at}
           >
             {reservation.id}

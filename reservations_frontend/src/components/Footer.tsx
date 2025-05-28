@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
-    <footer className="text-center text-gray-400 text-sm py-2 mt-3 border-t border-gray-700">
+    <footer className="text-center text-gray-400 h-6 text-sm py-1  border-t border-gray-700">
       <p>
-        © {new Date().getFullYear()} —{" "}
+        © 2025 —{" "}
         <a
           href="https://github.com/goran010/Registration-API"
           target="_blank"

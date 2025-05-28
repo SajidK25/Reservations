@@ -24,7 +24,6 @@ export function ProfileMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Avatar Button */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -38,7 +37,7 @@ export function ProfileMenu() {
           style={{ animation: "slideDown 0.3s ease-out forwards" }}
         >
           <div className="flex">
-            <div className="flex items-center justify-center flex-shrink-0 h-full p-4">
+            <div className="flex items-center justify-center flex-shrink-0 h-full p-3">
               <ProfilePicture size="large" />
             </div>
 
