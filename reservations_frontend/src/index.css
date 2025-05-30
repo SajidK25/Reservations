@@ -16,3 +16,14 @@ input:-webkit-autofill:active {
   /* delay autofill background flash */
   transition: background-color 5000s ease-in-out 0s;
 }
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;   /* Adjust width as needed */
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #718096; /* Example color */
+  border-radius: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #2d3748;
+}

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="text-center text-gray-400 h-6 text-sm py-1  border-t border-gray-700">
+    <footer className="text-center text-gray-400 h-6 text-sm border-t border-gray-700">
       <p>
         © 2025 —{" "}
         <a

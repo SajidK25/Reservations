@@ -64,16 +64,16 @@ export default function CalendarGrid({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 text-center text-gray-400 mb-2">
+      <div className="grid grid-cols-7 gap-2 text-center text-gray-400 mb-2 h-8">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div key={day} className="text-sm sm:text-sm">
             {day}
           </div>
         ))}
       </div>
-      <div className="h-[calc(100vh-15rem)] flex flex-col justify-between">
+      <div className="h-[calc(100vh-12rem)]  grid grid-rows-6 gap-1 ">
         {weeks.map((week, i) => (
-          <div key={i} className="grid grid-cols-7 gap-2 h-[calc(17%-9px)]">
+          <div key={i} className="grid grid-cols-7 gap-2">
             {week.map((day, j) => {
               let cellDay = day;
               let isOtherMonth = false;

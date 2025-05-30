@@ -1,5 +1,6 @@
 import { Reservation } from "../types/reservation";
 import AddReservationBtn from "./AddReservationBtn";
+import ReservationPill from "./ReservationPill";
 
 interface DayCardProps {
   day: number;
@@ -19,28 +20,23 @@ export default function DayCard({
   isOtherMonth = false,
 }: DayCardProps) {
   const otherMonthClasses = "text-gray-300 opacity-30 cursor-not-allowed";
-
   return (
     <div
-      className={`rounded-xl h-full  flex flex-col items-center justify-between transition duration-200 text-base py-1 sm:text-base font-base  text-white
+      className={`rounded-xl h-full flex flex-col items-center transition duration-200 pt-1 text-base font-base text-white  gap-1
         ${isSelected ? "bg-blue-700" : "bg-gray-700 hover:bg-blue-600"}
-         ${isOtherMonth ? otherMonthClasses : ""}
+        ${isOtherMonth ? otherMonthClasses : ""}
       `}
     >
-      <div className="text-sm font-semibold">{day}</div>
-      <div className="flex flex-col flex-1 justify-start w-full mt-1 px-1 gap-1">
+      <div className="text-xs font-semibold">{day}</div>
+      <div className="flex flex-col flex-1 min-h-0 max-h-16 w-full gap-0.5 overflow-y-auto scrollbar-thin">
         {reservations.map((reservation) => (
-          <div
-            key={reservation.id}
-            className="bg-blue-900 bg-opacity-60 rounded px-1 text-[10px] truncate"
-            title={reservation.created_at}
-          >
-            {reservation.id}
-          </div>
+          <ReservationPill key={reservation.id} reservation={reservation} />
         ))}
       </div>
-
       <AddReservationBtn onAddReservation={onAddReservation} />
     </div>
   );
 }
+
+
+

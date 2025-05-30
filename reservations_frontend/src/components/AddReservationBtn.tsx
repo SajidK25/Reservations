@@ -8,7 +8,7 @@ export default function AddReservationBtn({
   return (
     <button
       className="
-          w-7 h-7
+          w-6 h-6
           rounded-full
           bg-blue-900
           text-white
@@ -28,7 +28,7 @@ export default function AddReservationBtn({
       aria-label="Dodaj rezervaciju"
       type="button"
     >
-      <span className="text-lg leading-none">+</span>
+      <span className="text-md leading-none">+</span>
     </button>
   );
 }
