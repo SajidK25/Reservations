@@ -34,6 +34,15 @@ export const useReservationStore = create<ReservationStore>(((set, get) => ({
 
       set({ reservations: grouped });
     } catch (err) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "status" in err &&
+        err.status === 401
+      ) {
+        window.location.href = "/login";
+        return;
+      }
       console.error("Failed to fetch", err);
     } finally {
       set({ loading: false });

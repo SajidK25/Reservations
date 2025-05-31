@@ -73,7 +73,7 @@ export default function CalendarGrid({
       </div>
       <div className="h-[calc(100vh-12rem)]  grid grid-rows-6 gap-1 ">
         {weeks.map((week, i) => (
-          <div key={i} className="grid grid-cols-7 gap-2">
+          <div key={i} className="grid grid-cols-7 gap-2 min-h-20">
             {week.map((day, j) => {
               let cellDay = day;
               let isOtherMonth = false;
