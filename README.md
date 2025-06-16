@@ -1,33 +1,21 @@
-The Reservations Management System is a simple yet robust RESTful API designed to handle user registration, authentication, and the comprehensive management of users, appointments, and reservations. The system is built using modern technologies such as NestJS and TypeScript, ensuring a modular and maintainable codebase. PostgreSQL is used for reliable and efficient data storage, while Docker is leveraged for streamlined deployment and scalability across different environments.
+The **Reservations Management System** is a simple yet robust RESTful API designed to handle user registration, authentication, and the comprehensive management of users, appointments, and reservations. The system is built using modern technologies such as NestJS and TypeScript, ensuring a modular and maintainable codebase. PostgreSQL is used for reliable and efficient data storage, while Docker is leveraged for streamlined deployment and scalability across different environments.
 
-Origin as a College Project
+###Origin as a College Project
 This project originated as a college assignment, where the primary objective was to address real-world challenges in managing reservations and user data efficiently. The initial phase focused on understanding the requirements typical for reservation systems—such as user authentication, appointment scheduling, and secure data handling—which are common in industries like hospitality, healthcare, and education. The academic setting provided a foundation for applying software engineering principles, collaborative development, and iterative improvement, ensuring the system would be both practical and educational.
 
-Current Development Status
+###Current Development Status
 The Reservations Management System is currently under active development
 
-Initial Planning and Requirement Gathering: Identified core features such as user management, authentication, and reservation handling.
+###Key Features
+- User Registration and Authentication: Secure sign-up and login processes with role-based access control.
 
-System Design and Technology Selection: Chose NestJS for its scalability and structure, TypeScript for type safety, PostgreSQL for robust data management, and Docker for consistent deployment.
+- Comprehensive Management: APIs for managing users, appointments, and reservations.
 
-Implementation Phase: Building RESTful endpoints for user registration, login, and CRUD operations for appointments and reservations.
+- Modern Tech Stack: Built with NestJS and TypeScript for scalability and maintainability.
 
-Continuous Testing and Refinement: Employing best practices in software testing and documentation to ensure reliability and maintainability.
+- Database Integration: Utilizes PostgreSQL for reliable and efficient data storage.
 
-Future Enhancements: Plans to integrate advanced features such as notifications, analytics dashboards, and third-party integrations as the project matures.
-
-This ongoing development ensures that the system remains relevant, secure, and adaptable to new use cases and technological advancements.
-
-Key Features
-User Registration and Authentication: Secure sign-up and login processes with role-based access control.
-
-Comprehensive Management: APIs for managing users, appointments, and reservations.
-
-Modern Tech Stack: Built with NestJS and TypeScript for scalability and maintainability.
-
-Database Integration: Utilizes PostgreSQL for reliable and efficient data storage.
-
-Containerized Deployment: Docker support for easy setup, scaling, and portability across different platforms.
+- Containerized Deployment: Docker support for easy setup, scaling, and portability across different platforms.
 
 
 🛠 Technologies:
