@@ -14,8 +14,6 @@ import { ReservationsService } from './reservations.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 
-
-
 @Controller('reservations')
 @UseGuards(AuthGuard('jwt'))
 export class ReservationsController {
@@ -23,11 +21,10 @@ export class ReservationsController {
 
   @Post()
   async reserve(@Request() req, @Body() body: CreateReservationDto) {
-    return this.reservationsService.create(
-      req.user.id,
-      body.startDate,
-      body.endDate,
-    );
+    return this.reservationsService.create({
+      ...body,
+      user_id: req.user.id,
+    });
   }
 
   @Get()
@@ -60,19 +57,27 @@ export class ReservationsController {
     return this.reservationsService.delete(parseInt(id));
   }
 
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      startDate: string;
+      endDate: string;
+      user_id: number;
+      request: string;
+      space_id: number;
+      title: string;
+    },
+  ) {
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('ID mora biti broj.');
+    }
 
-
-@Patch(':id')
-async update(
-  @Param('id') id: string,
-  @Body() body: { startDate: string; endDate: string },
-) {
-  const parsedId = parseInt(id, 10);
-  if (isNaN(parsedId)) {
-    throw new BadRequestException('ID mora biti broj.');
+    return this.reservationsService.update({
+      ...body,
+      id: parsedId,
+    });
   }
-
-  return this.reservationsService.update(parsedId, body.startDate, body.endDate);
-}
-
 }

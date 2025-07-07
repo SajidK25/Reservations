@@ -5,6 +5,7 @@ interface TimePickerProps {
   startTime: string;
   endTime: string;
   onChange: (start: string, end: string) => void;
+  error?: string;
 }
 
 export default function TimePicker({
@@ -55,7 +56,7 @@ export default function TimePicker({
             }}
             type="button"
             onClick={() => handleSelect(time)}
-            className={`text-sm px-4 py-2 text-left rounded-lg border w-full transition duration-200 ${
+            className={`text-xs px-4 py-1 text-left rounded-lg border w-full transition duration-200 ${
               startTime === time
                 ? "bg-green-600 text-white border-green-600"
                 : endTime === time

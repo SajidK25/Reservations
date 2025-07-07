@@ -1,15 +1,24 @@
-import { fetchReservations, createReservation } from "../api/reservationsApi";
+import {
+  fetchReservations,
+  createReservation,
+  updateReservation,
+} from "../api/reservationsApi";
 import { create, StateCreator } from "zustand";
-import { Reservation, newReservation } from "../types/reservation";
+import { Reservation, NewReservation } from "../types/reservation";
+import { getSpaces } from "../api/spacesApi"; 
 
 interface ReservationStore {
   reservations: Record<string, Reservation[]>;
+  spaceOptions: Record<number, string>;
   loading: boolean;
   getAllReservations: () => Promise<void>;
-  addReservation: (data: newReservation) => Promise<void>;
+  addReservation: (data: NewReservation) => Promise<void>;
+  updateReservation: (data: Reservation) => Promise<void>;
+  getSpaceOptions: () => Promise<void>;
 }
 export const useReservationStore = create<ReservationStore>(((set, get) => ({
   reservations: {},
+  spaceOptions: {},
   loading: false,
 
   getAllReservations: async () => {
@@ -64,6 +73,43 @@ export const useReservationStore = create<ReservationStore>(((set, get) => ({
       set({ reservations: updated });
     } catch (err) {
       console.error("Failed to add", err);
+    }
+  },
+  updateReservation: async (reservationData) => {
+    try {
+      const updatedReservation = await updateReservation(
+        reservationData.id,
+        reservationData
+      );
+
+      const current = get().reservations;
+      const dateKey = updatedReservation.startDate.split("T")[0];
+
+      const updatedDayReservations = (current[dateKey] || []).filter(
+        (r) => r.id !== updatedReservation.id
+      );
+
+      const updated = {
+        ...current,
+        [dateKey]: [...updatedDayReservations, updatedReservation],
+      };
+
+      set({ reservations: updated });
+    } catch (err) {
+      console.error("Failed to update", err);
+    }
+  },
+  getSpaceOptions: async () => {
+    try {
+      const spaces = await getSpaces();
+
+      const options: Record<number, string> = {};
+      spaces.forEach((space: { id: number; name: string }) => {
+        options[space.id] = space.name;
+      });
+      set({ spaceOptions: options });
+    } catch (err) {
+      console.error("Failed to fetch space options", err);
     }
   },
 })) as StateCreator<ReservationStore>);

@@ -1,6 +1,10 @@
 import { IsNotEmpty, IsString, IsDateString, IsInt } from 'class-validator';
 
-export class CreateReservationDto {
+export class UpdateReservationDto {
+  @IsInt()
+  @IsNotEmpty()
+  id: number;
+
   @IsInt()
   @IsNotEmpty()
   user_id: number;
@@ -14,7 +18,7 @@ export class CreateReservationDto {
   endDate: string;
 
   @IsInt()
-  spaceId: number;
+  space_id: number;
 
   @IsString()
   request: string;

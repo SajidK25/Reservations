@@ -1,9 +1,12 @@
 export interface Reservation {
   id: number;
+  title: string;
   startDate: string;
   endDate: string;
   userId: number;
-  created_at?: string;
+  request?: string;
+  spaceId: number;
 }
+export type NewReservation = Omit<Reservation, "id">;
 
-export type newReservation = Omit<Reservation, "id">;
+

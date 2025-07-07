@@ -5,8 +5,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Pool } from 'pg';
+import { CreateReservationDto } from './dto/create-reservation.dto';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { Reservation } from './dto/reservation.dto';
 
-function mapReservationRow(row: any) {
+function mapReservationRow(row: Reservation) {
   return {
     id: row.id ?? row.reservation_id,
     userId: row.user_id,
@@ -16,6 +19,7 @@ function mapReservationRow(row: any) {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     userName: row.user_name,
+    request: row.request,
   };
 }
 
@@ -23,15 +27,18 @@ function mapReservationRow(row: any) {
 export class ReservationsService {
   constructor(@Inject('PG') private readonly db: Pool) {}
 
-  async create(userId: number, startDate: string, endDate: string) {
+  async create(createReservationDto: CreateReservationDto) {
+    const { user_id, startDate, endDate, request, spaceId, title } =
+      createReservationDto;
     try {
+      console.log('Stvaranje rezervacije:',createReservationDto)
       const result = await this.db.query(
         `
-        INSERT INTO reservations (user_id, start_date, end_date, created_at, updated_at)
-        VALUES ($1, $2, $3, NOW(), NOW())
+        INSERT INTO reservations (user_id, start_date, end_date, request, space_id, title, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING *;
         `,
-        [userId, startDate, endDate],
+        [user_id, startDate, endDate, request, spaceId, title],
       );
       return mapReservationRow(result.rows[0]);
     } catch (err) {
@@ -72,17 +79,10 @@ export class ReservationsService {
     try {
       const result = await this.db.query(
         `
-        SELECT 
-          r.id AS reservation_id,
-          r.user_id,
-          r.status,
-          r.start_date,
-          r.end_date,
-          r.created_at,
-          r.updated_at,
-          u.name AS user_name
+        SELECT *
         FROM reservations r
         JOIN users u ON r.user_id = u.id
+        JOIN spaces s ON r.space_id = s.id
         ORDER BY r.created_at DESC
         `,
       );
@@ -113,18 +113,24 @@ export class ReservationsService {
     }
   }
 
-  async update(id: number, startDate: string, endDate: string) {
+  async update(updateReservationDto: UpdateReservationDto) {
+    const { id, user_id, startDate, endDate, request, space_id, title } =
+      updateReservationDto;
     try {
       const result = await this.db.query(
         `
         UPDATE reservations
-        SET start_date = $1,
-            end_date = $2,
-            updated_at = NOW()
-        WHERE id = $3
+        SET user_id = $1,
+          start_date = $2,
+          end_date = $3,
+          request = $4,
+          space_id = $5,
+          title= $6,
+          updated_at = NOW()
+        WHERE id = $6
         RETURNING *;
-        `,
-        [startDate, endDate, id],
+      `,
+        [user_id, startDate, endDate, request, space_id, id, title],
       );
       if (result.rowCount === 0) {
         throw new BadRequestException(

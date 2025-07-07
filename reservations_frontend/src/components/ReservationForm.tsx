@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TimePicker from "./TimePicker";
-import { createReservation } from "../api/reservationsApi";
 import { useAuthStore } from "../store/authStore";
-import { useReservationStore } from "../store/reservationStore";
+import { useReservationStore} from "../store/reservationStore";
+import { Reservation } from "../types/reservation";
 
 interface ReservationFormProps {
   onClose: () => void;
   selectedDate: string;
+  reservation?: Reservation;
 }
 
 const availableTimes = [
@@ -40,19 +41,40 @@ const availableTimes = [
 export default function ReservationForm({
   onClose,
   selectedDate,
+  reservation,
+ 
 }: ReservationFormProps) {
+  const {
+    addReservation,
+    updateReservation,
+    getAllReservations,
+    getSpaceOptions,
+    spaceOptions
+  } = useReservationStore();
+
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    date: selectedDate,
-    startTime: "",
-    endTime: "",
-    guests: 1,
-    place: "",
-    requests: "",
+    title: reservation?.title || "",
+    startTime: reservation
+      ? new Date(reservation.startDate).toISOString().substring(11, 16)
+      : "",
+    endTime: reservation
+      ? new Date(reservation.endDate).toISOString().substring(11, 16)
+      : "",
+    request: reservation?.request || "",
+    date: reservation
+      ? new Date(reservation.startDate).toISOString().substring(0, 10)
+      : selectedDate,
+    spaceId: reservation?.spaceId ? String(reservation.spaceId) : "",
   });
+
   const { user } = useAuthStore();
-  const { getAllReservations } = useReservationStore();
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      await getSpaceOptions();
+    };
+    fetchSpaces();
+  }, [getSpaceOptions]);
+  
 
   const [errors, setErrors] = useState<{ time?: string }>({});
 
@@ -78,19 +100,26 @@ export default function ReservationForm({
 
     setErrors({});
     const userId = user ? user.id : 1;
-    const completeData = {
+
+    const baseData = {
       ...formData,
       startDate: new Date(
         `${selectedDate}T${formData.startTime}`
       ).toISOString(),
       endDate: new Date(`${selectedDate}T${formData.endTime}`).toISOString(),
       userId,
+      spaceId:2,
     };
 
     try {
-      await createReservation(completeData);
+      if (reservation) {
+        await updateReservation({ ...baseData, id: reservation.id });
+        alert("Reservation updated!");
+      } else {
+        await addReservation(baseData);
+        alert("Reservation created!");
+      }
       await getAllReservations();
-      alert("Rezervacija poslana!");
       onClose();
     } catch (error: any) {
       alert("Neuspješno slanje rezervacije. Pokušajte ponovno.");
@@ -101,7 +130,6 @@ export default function ReservationForm({
     <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center p-6">
       <div className="relative bg-[#111827] text-white w-full max-w-6xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[250px_1fr]">
         <div className="flex flex-col-reverse gap-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700">
-          {/* Time Picker */}
           <div className="p-4 border-r border-gray-800 h-full flex flex-col">
             <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
               Select start time
@@ -131,42 +159,24 @@ export default function ReservationForm({
           >
             &times;
           </button>
-
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-6 flex-grow overflow-y-auto pr-1 pt-10"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
-              {/* Name */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-300">
                   Name
                 </label>
                 <input
-                  name="name"
-                  value={formData.name}
+                  name="title"
+                  value={formData.title}
                   onChange={handleChange}
                   required
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-300">
-                  Phone Number
-                </label>
-                <input
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Date */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-300">
                   Date
@@ -181,49 +191,33 @@ export default function ReservationForm({
                 />
               </div>
 
-              {/* Guests */}
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-300">
-                  Guests
-                </label>
-                <input
-                  type="number"
-                  name="guests"
-                  min="1"
-                  value={formData.guests}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Place Selector */}
               <div className="sm:col-span-2">
                 <label className="block mb-1 text-sm font-medium text-gray-300">
-                  Select Table / Place
+                  Select place
                 </label>
                 <select
-                  name="place"
+                  name="spaceId"
+                  value={formData.spaceId}
                   onChange={handleChange}
-                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  className=" bg-gray-800 border border-gray-700 rounded-lg px-4 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Choose a place...</option>
-                  <option value="window">Window Table</option>
-                  <option value="center">Center Table</option>
-                  <option value="patio">Patio</option>
-                  <option value="vip">VIP Room</option>
+                  {Object.entries(spaceOptions).map(([id, name]) => (
+                    <option key={id} value={id} className="bg-gray-800 text-white">
+                      {name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
-            {/* Special Requests */}
             <div className="p-1">
               <label className="block mb-1 text-sm font-medium text-gray-300">
                 Special Requests
               </label>
               <textarea
-                name="requests"
-                value={formData.requests}
+                name="request"
+                value={formData.request}
                 onChange={handleChange}
                 rows={3}
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -235,7 +229,7 @@ export default function ReservationForm({
                 type="submit"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition duration-150 font-semibold"
               >
-                Submit Reservation
+                {reservation ? "Update Reservation" : "Submit Reservation"}
               </button>
             </div>
           </form>

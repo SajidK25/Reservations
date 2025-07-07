@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ReservationsModule } from './reservations/reservations.module';
+import { SpacesModule } from './spaces/spaces.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ReservationsModule } from './reservations/reservations.module';
     UsersModule,
     ReservationsModule,
     AuthModule,
+    SpacesModule
   ],
   providers: [
     // Applies JWT guard globally (protects all routes by default)

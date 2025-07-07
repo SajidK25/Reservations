@@ -1,4 +1,4 @@
-import { Reservation, newReservation } from "../types/reservation";
+import { Reservation, NewReservation } from "../types/reservation";
 import api from "./api";
 
 api.interceptors.request.use((config) => {
@@ -14,25 +14,26 @@ export const fetchReservations = async () => {
   return response.data;
 };
 
-export const getReservation = async (id: string) => {
+export const getReservation = async (id: number) => {
   const response = await api.get(`/reservations/${id}`);
   return response.data;
 };
 
 export const createReservation = async (
-  data: newReservation
+  data: NewReservation
 ): Promise<Reservation> => {
+  console.log(data)
   const response = await api.post("/reservations", data);
   return response.data;
 };
 
 
-export const updateReservation = async (id: string, data: any) => {
+export const updateReservation = async (id: number, data: any) => {
   const response = await api.patch(`/reservations/${id}`, data);
   return response.data;
 };
 
-export const deleteReservation = async (id: string) => {
+export const deleteReservation = async (id: number) => {
   const response = await api.delete(`/reservations/${id}`);
   return response.data;
 };
