@@ -13,14 +13,20 @@ export default function Header() {
         {user?.role === "admin" && (
           <>
             <Link
+              to="/"
+              className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 flex items-center"
+            >
+              Home
+            </Link>
+            <Link
               to="/admin"
-              className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700"
+              className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 flex items-center"
             >
               Dashboard
             </Link>
             <Link
               to="/admin/users"
-              className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700"
+              className="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 flex items-center"
             >
               Users
             </Link>

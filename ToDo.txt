@@ -1,0 +1,11 @@
+
+
+-dizajn
+
+-responzivnost
+
+provjeriti sigurnost na backendu
+
+provjeriti sigurnost na frontu
+
+deploy

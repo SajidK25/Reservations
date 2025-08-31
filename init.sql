@@ -27,6 +27,8 @@ CREATE TABLE users (
 CREATE TABLE spaces (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
+  start_time TIME,
+  end_time TIME
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -46,20 +48,15 @@ CREATE TABLE reservations (
 );
 
 -- Ubacivanje default rola
-INSERT INTO roles (name) VALUES ('admin'), ('user');
-
--- Insert some users
-INSERT INTO users (name, email, password, role_id)
-VALUES
-  ('John Doe', 'john@example.com', 'password123', 2),
-  ('Jane Smith', 'jane@example.com', 'password456', 2),
-  ('Admin User', 'admin@example.com', 'adminpass', 1);
+INSERT INTO roles (id, name, created_at, updated_at) VALUES
+(1, 'admin'),
+(2, 'user');
 
 -- Insert some spaces
 INSERT INTO spaces (name, created_at, updated_at, start_time, end_time)
 VALUES 
-  ('Space 1', NOW(), NOW(), '08:00:00', '22:00:00'),
-  ('Space 2', NOW(), NOW(), '08:00:00', '22:00:00');
+  ('Space 1', NOW(), NOW(), '08:00:00', '17:00:00'),
+  ('Space 2', NOW(), NOW(), '08:00:00', '17:00:00');
 
 
 

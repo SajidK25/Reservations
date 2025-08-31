@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import { Reservation } from "../types/reservation";
 import api from "../api/api";
+import Header from "../components/Header";
 
 export default function Reservations() {
   const { user } = useAuthStore();
@@ -30,26 +31,31 @@ export default function Reservations() {
   }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <h2 className="text-2xl font-bold mb-4">All Reservations (Admin)</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div className="text-red-600">{error}</div>}
-      <div className="space-y-2">
-        {reservations.map((r) => (
-          <div key={r.id} className="p-3 bg-white rounded shadow">
-            <div className="font-semibold">{r.title}</div>
-            <div className="text-sm text-gray-600">
-              {new Date(r.startDate).toLocaleString()} →{" "}
-              {new Date(r.endDate).toLocaleString()}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 ">
+      <Header />
+      <div className="p-8 flex flex-col gap-2">
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-600">{error}</div>}
+        <div className="space-y-2">
+          {reservations.map((r) => (
+            <div
+              key={r.id}
+              className="p-3 bg-gray-800 rounded shadow text-white"
+            >
+              <div className="font-semibold">{r.title}</div>
+              <div className="text-sm">
+                {new Date(r.startDate).toLocaleString()} →{" "}
+                {new Date(r.endDate).toLocaleString()}
+              </div>
+              <div className="text-sm">
+                User ID: {r.userId} | Space: {r.spaceId}
+              </div>
+              {r.request && (
+                <div className="text-sm italic">Request: {r.request}</div>
+              )}
             </div>
-            <div className="text-sm">
-              User ID: {r.userId} | Space: {r.spaceId}
-            </div>
-            {r.request && (
-              <div className="text-sm italic">Request: {r.request}</div>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listUsers, deleteUser } from "../api/usersApi";
 import { useAuthStore } from "../store/authStore";
+import Header from "../components/Header";
 
 interface RowUser {
   id: number;
@@ -47,37 +48,39 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4">Users</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div className="text-red-600">{error}</div>}
-      <table className="min-w-full bg-white shadow rounded">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="p-3">ID</th>
-            <th className="p-3">Name</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id} className="border-b">
-              <td className="p-3">{u.id}</td>
-              <td className="p-3">{u.name}</td>
-              <td className="p-3">{u.email}</td>
-              <td className="p-3">
-                <button
-                  onClick={() => onDelete(u.id)}
-                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </td>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 ">
+      <Header />
+      <div className="p-8 flex flex-col gap-2">
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-600">{error}</div>}
+        <table className="min-w-full p-3 bg-gray-800 rounded shadow text-white">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="p-3">ID</th>
+              <th className="p-3">Name</th>
+              <th className="p-3">Email</th>
+              <th className="p-3">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id} className="border-b">
+                <td className="p-3">{u.id}</td>
+                <td className="p-3">{u.name}</td>
+                <td className="p-3">{u.email}</td>
+                <td className="p-3">
+                  <button
+                    onClick={() => onDelete(u.id)}
+                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
