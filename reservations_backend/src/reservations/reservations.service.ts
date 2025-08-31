@@ -16,6 +16,8 @@ function mapReservationRow(row: Reservation) {
     status: row.status,
     startDate: row.start_date,
     endDate: row.end_date,
+    title: row.title,
+    spaceId: row.space_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     userName: row.user_name,
@@ -27,18 +29,105 @@ function mapReservationRow(row: Reservation) {
 export class ReservationsService {
   constructor(@Inject('PG') private readonly db: Pool) {}
 
-  async create(createReservationDto: CreateReservationDto) {
-    const { user_id, startDate, endDate, request, spaceId, title } =
-      createReservationDto;
+  private async getSpaceHours(
+    spaceId: number,
+  ): Promise<{ open: string; close: string }> {
+    // Try to read columns if they exist; fallback to defaults
     try {
-      console.log('Stvaranje rezervacije:',createReservationDto)
+      const result = await this.db.query(
+        `SELECT open_time::text AS open, close_time::text AS close FROM spaces WHERE id = $1`,
+        [spaceId],
+      );
+      if (result.rowCount && result.rows[0]) {
+        const open = result.rows[0].open || '08:00:00';
+        const close = result.rows[0].close || '20:00:00';
+        return { open, close };
+      }
+    } catch (_) {
+      // ignore if columns don't exist
+    }
+    return { open: '08:00:00', close: '20:00:00' };
+  }
+
+  private async assertWithinHoursAndNoOverlap(
+    spaceId: number,
+    startIso: string,
+    endIso: string,
+    excludeId?: number,
+  ) {
+    if (!spaceId) throw new BadRequestException('Nedostaje prostor.');
+    if (!startIso || !endIso)
+      throw new BadRequestException('Nedostaju vremena.');
+
+    // Ensure start < end
+    const start = new Date(startIso);
+    const end = new Date(endIso);
+    if (
+      !(start instanceof Date) ||
+      isNaN(start.getTime()) ||
+      !(end instanceof Date) ||
+      isNaN(end.getTime())
+    ) {
+      throw new BadRequestException('Vremenski format nije ispravan.');
+    }
+    if (end <= start) {
+      throw new BadRequestException(
+        'Vrijeme završetka mora biti nakon početka.',
+      );
+    }
+
+    // Working hours check (time-of-day)
+    const { open, close } = await this.getSpaceHours(spaceId);
+    const startTime = startIso.substring(11, 19); // HH:MM:SS
+    const endTime = endIso.substring(11, 19);
+    // simple string compare works for HH:MM:SS
+    if (startTime < open || endTime > close) {
+      throw new BadRequestException(
+        `Rezervacija mora biti između ${open} i ${close}.`,
+      );
+    }
+
+    // Overlap check: NOT (newEnd <= existingStart OR newStart >= existingEnd)
+    const params: any[] = [spaceId, startIso, endIso];
+    let overlapSql = `
+      SELECT 1
+      FROM reservations r
+      WHERE r.space_id = $1
+        AND NOT ($3 <= r.start_date OR $2 >= r.end_date)
+    `;
+    if (excludeId) {
+      overlapSql += ' AND r.id <> $4';
+      params.push(excludeId);
+    }
+
+    const overlap = await this.db.query(overlapSql, params);
+    if ((overlap.rowCount ?? 0) > 0) {
+      throw new BadRequestException(
+        'Postoji rezervacija u odabranom terminu za taj prostor.',
+      );
+    }
+  }
+
+  async create(createReservationDto: CreateReservationDto) {
+    const { userId, startDate, endDate, request, spaceId, title } =
+      createReservationDto as unknown as {
+        userId: number;
+        startDate: string;
+        endDate: string;
+        request: string;
+        spaceId: number;
+        title: string;
+      };
+    try {
+      console.log('Stvaranje rezervacije:', createReservationDto);
+      await this.assertWithinHoursAndNoOverlap(spaceId, startDate, endDate);
       const result = await this.db.query(
         `
         INSERT INTO reservations (user_id, start_date, end_date, request, space_id, title, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING *;
         `,
-        [user_id, startDate, endDate, request, spaceId, title],
+        [userId, startDate, endDate, request, spaceId, title],
       );
       return mapReservationRow(result.rows[0]);
     } catch (err) {
@@ -114,9 +203,18 @@ export class ReservationsService {
   }
 
   async update(updateReservationDto: UpdateReservationDto) {
-    const { id, user_id, startDate, endDate, request, space_id, title } =
-      updateReservationDto;
+    const { id, userId, startDate, endDate, request, spaceId, title } =
+      updateReservationDto as unknown as {
+        id: number;
+        userId: number;
+        startDate: string;
+        endDate: string;
+        request: string;
+        spaceId: number;
+        title: string;
+      };
     try {
+      await this.assertWithinHoursAndNoOverlap(spaceId, startDate, endDate, id);
       const result = await this.db.query(
         `
         UPDATE reservations
@@ -127,10 +225,10 @@ export class ReservationsService {
           space_id = $5,
           title= $6,
           updated_at = NOW()
-        WHERE id = $6
+        WHERE id = $7
         RETURNING *;
       `,
-        [user_id, startDate, endDate, request, space_id, id, title],
+        [userId, startDate, endDate, request, spaceId, title, id],
       );
       if (result.rowCount === 0) {
         throw new BadRequestException(

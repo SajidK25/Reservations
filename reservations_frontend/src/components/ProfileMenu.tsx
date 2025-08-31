@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePicture from "./ProfilePicture";
+import { useAuthStore } from "../store/authStore";
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const logoutStore = useAuthStore((s) => s.logout);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -18,7 +21,7 @@ export function ProfileMenu() {
   }, []);
 
   const logout = () => {
-    sessionStorage.removeItem("access_token");
+    logoutStore();
     navigate("/login");
   };
 
@@ -33,7 +36,7 @@ export function ProfileMenu() {
 
       {open && (
         <div
-          className="absolute right-0 mt-2 w-72 bg-gray-900 border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden transition-all duration-300 transform origin-top scale-95 animate-slide-down"
+          className="absolute right-0 mt-2 w-72 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden transition-all duration-300 transform origin-top scale-95 animate-slide-down text-white"
           style={{ animation: "slideDown 0.3s ease-out forwards" }}
         >
           <div className="flex">
@@ -41,16 +44,22 @@ export function ProfileMenu() {
               <ProfilePicture size="large" />
             </div>
 
-            <div className="flex flex-col justify-between p-4 text-white w-full">
+            <div className="flex flex-col justify-between p-4 w-full">
               <div>
-                <div className="text-lg font-semibold">Mark Smith</div>
-                <div className="text-sm text-gray-400">Administrator</div>
-                <div className="text-sm text-gray-400">mark@example.com</div>
+                <div className="text-lg font-semibold truncate">
+                  {user?.name || "User"}
+                </div>
+                <div className="text-sm text-gray-400 capitalize">
+                  {user?.role || "user"}
+                </div>
+                <div className="text-sm text-gray-400 truncate">
+                  {user?.email}
+                </div>
               </div>
 
               <button
                 onClick={logout}
-                className="mt-2 text-sm text-red-400 hover:text-red-500 transition-colors text-left"
+                className="mt-3 text-sm text-red-400 hover:text-red-300 transition-colors text-left"
               >
                 Logout
               </button>

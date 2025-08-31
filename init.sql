@@ -2,6 +2,7 @@
 DROP TABLE IF EXISTS reservations;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS spaces;
 
 -- Tablica: roles
 CREATE TABLE roles (
@@ -22,6 +23,14 @@ CREATE TABLE users (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Tablica: spaces
+CREATE TABLE spaces (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Tablica: reservations
 CREATE TABLE reservations (
   id SERIAL PRIMARY KEY,
@@ -29,6 +38,9 @@ CREATE TABLE reservations (
   status TEXT DEFAULT 'active',
   start_date TIMESTAMP,
   end_date TIMESTAMP,
+  request TEXT,
+  space_id INTEGER REFERENCES spaces(id),
+  title TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -43,10 +55,11 @@ VALUES
   ('Jane Smith', 'jane@example.com', 'password456', 2),
   ('Admin User', 'admin@example.com', 'adminpass', 1);
 
--- Insert some reservations
-INSERT INTO reservations (user_id, status, start_date, end_date)
-VALUES
-  (1, 'active', '2025-05-01T10:00:00', '2025-05-01T11:00:00'),
-  (2, 'active', '2025-05-02T14:00:00', '2025-05-02T15:30:00'),
-  (1, 'cancelled', '2025-05-03T09:00:00', '2025-05-03T10:00:00');
+-- Insert some spaces
+INSERT INTO spaces (name, created_at, updated_at, start_time, end_time)
+VALUES 
+  ('Space 1', NOW(), NOW(), '08:00:00', '22:00:00'),
+  ('Space 2', NOW(), NOW(), '08:00:00', '22:00:00');
+
+
 

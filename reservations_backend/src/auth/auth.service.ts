@@ -62,7 +62,11 @@ export class AuthService {
       // Vrati bez lozinke
       const { password: _, ...userWithoutPassword } = newUser;
       return userWithoutPassword;
-    } catch (err) {
+    } catch (err: any) {
+      // Proslijedi postojeće HttpExceptions (BadRequest/Conflict)
+      if (err?.status && err?.message) {
+        throw err;
+      }
       console.error('Greška kod registracije:', err);
       throw new InternalServerErrorException('Registracija nije uspjela.');
     }

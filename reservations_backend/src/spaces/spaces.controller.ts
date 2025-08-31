@@ -23,12 +23,7 @@ export class SpacesController {
 
   @Get('')
   async getAll() {
-    return [
-      { id: 1, name: 'O-28' },
-      { id: 2, name: '103' },
-      { id: 3, name: '104' },
-      { id: 4, name: 'S-32' },
-    ];
+    return this.spacesService.findAll();
   }
 
   @Delete(':id')
@@ -38,11 +33,6 @@ export class SpacesController {
 
   @Get(':id')
   async getSpaces() {
-    return [
-      { id: 1, name: 'O-28' },
-      { id: 2, name: '103' },
-      { id: 3, name: '104' },
-      { id: 4, name: 'S-32' },
-    ];
+    return this.spacesService.findAll();
   }
 }

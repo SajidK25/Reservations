@@ -5,7 +5,7 @@ import {
 } from "../api/reservationsApi";
 import { create, StateCreator } from "zustand";
 import { Reservation, NewReservation } from "../types/reservation";
-import { getSpaces } from "../api/spacesApi"; 
+import { getSpaces } from "../api/spacesApi";
 
 interface ReservationStore {
   reservations: Record<string, Reservation[]>;
@@ -13,7 +13,9 @@ interface ReservationStore {
   loading: boolean;
   getAllReservations: () => Promise<void>;
   addReservation: (data: NewReservation) => Promise<void>;
-  updateReservation: (data: Reservation) => Promise<void>;
+  updateReservation: (
+    data: Partial<NewReservation> & { id: number }
+  ) => Promise<void>;
   getSpaceOptions: () => Promise<void>;
 }
 export const useReservationStore = create<ReservationStore>(((set, get) => ({

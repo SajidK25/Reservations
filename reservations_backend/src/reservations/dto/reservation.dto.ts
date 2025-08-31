@@ -9,5 +9,6 @@ export interface Reservation {
   updated_at: string;
   user_name?: string;
   request?: string | null;
+  space_id?: number;
   title: string;
 }

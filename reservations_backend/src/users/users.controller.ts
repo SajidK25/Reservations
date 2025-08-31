@@ -8,17 +8,25 @@ import {
   Post,
   BadRequestException,
   ParseIntPipe,
+  UseGuards,
+  Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Dohvati sve korisnike
   @Get()
-  findAll() {
+  async findAll(@Request() req) {
+    const isAdmin = await this.usersService.isAdmin(req.user.id);
+    if (!isAdmin)
+      throw new ForbiddenException('Samo admini mogu vidjeti korisnike.');
     return this.usersService.findAll();
   }
 
@@ -36,7 +44,10 @@ export class UsersController {
 
   // Obriši korisnika po ID-u
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const isAdmin = await this.usersService.isAdmin(req.user.id);
+    if (!isAdmin)
+      throw new ForbiddenException('Samo admini mogu brisati korisnike.');
     return this.usersService.delete(id);
   }
 

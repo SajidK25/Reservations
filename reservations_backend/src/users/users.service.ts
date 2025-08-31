@@ -50,6 +50,40 @@ export class UsersService {
     return result.rows[0];
   }
 
+  async getUserProfileById(
+    id: number,
+  ): Promise<{ id: number; name: string; email: string; role: string } | null> {
+    const result = await this.db.query(
+      `SELECT u.id, u.name, u.email, COALESCE(r.name, 'user') as role
+       FROM users u
+       LEFT JOIN roles r ON u.role_id = r.id
+       WHERE u.id = $1`,
+      [id],
+    );
+    return result.rows[0] || null;
+  }
+
+  async getUserProfileByEmail(
+    email: string,
+  ): Promise<{ id: number; name: string; email: string; role: string } | null> {
+    const result = await this.db.query(
+      `SELECT u.id, u.name, u.email, COALESCE(r.name, 'user') as role
+       FROM users u
+       LEFT JOIN roles r ON u.role_id = r.id
+       WHERE u.email = $1`,
+      [email],
+    );
+    return result.rows[0] || null;
+  }
+
+  async isAdmin(userId: number): Promise<boolean> {
+    const result = await this.db.query(
+      `SELECT 1 FROM users WHERE id = $1 AND role_id = 1`,
+      [userId],
+    );
+    return (result.rowCount ?? 0) > 0;
+  }
+
   async findAll() {
     const result = await this.db.query('SELECT * FROM USERS');
     return result.rows;
@@ -83,7 +117,7 @@ export class UsersService {
         throw new ConflictException('Email je već u upotrebi.');
       }
     }
-    
+
     for (const [key, value] of Object.entries(data)) {
       if (value !== undefined && value !== null && `${value}`.trim() !== '') {
         fields.push(`${key} = $${index++}`);

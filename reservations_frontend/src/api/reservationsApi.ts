@@ -22,13 +22,15 @@ export const getReservation = async (id: number) => {
 export const createReservation = async (
   data: NewReservation
 ): Promise<Reservation> => {
-  console.log(data)
+  console.log(data);
   const response = await api.post("/reservations", data);
   return response.data;
 };
 
-
-export const updateReservation = async (id: number, data: any) => {
+export const updateReservation = async (
+  id: number,
+  data: Partial<NewReservation> & { id?: number }
+) => {
   const response = await api.patch(`/reservations/${id}`, data);
   return response.data;
 };

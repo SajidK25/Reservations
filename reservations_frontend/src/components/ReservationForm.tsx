@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TimePicker from "./TimePicker";
 import { useAuthStore } from "../store/authStore";
-import { useReservationStore} from "../store/reservationStore";
+import { useReservationStore } from "../store/reservationStore";
 import { Reservation } from "../types/reservation";
 
 interface ReservationFormProps {
@@ -10,7 +10,7 @@ interface ReservationFormProps {
   reservation?: Reservation;
 }
 
-const availableTimes = [
+const defaultTimes = [
   "08:00",
   "08:30",
   "09:00",
@@ -42,14 +42,13 @@ export default function ReservationForm({
   onClose,
   selectedDate,
   reservation,
- 
 }: ReservationFormProps) {
   const {
     addReservation,
     updateReservation,
     getAllReservations,
     getSpaceOptions,
-    spaceOptions
+    spaceOptions,
   } = useReservationStore();
 
   const [formData, setFormData] = useState({
@@ -66,6 +65,27 @@ export default function ReservationForm({
       : selectedDate,
     spaceId: reservation?.spaceId ? String(reservation.spaceId) : "",
   });
+  const [hours, setHours] = useState<{ open: string; close: string } | null>(
+    null
+  );
+
+  const timesForPicker = useMemo(() => {
+    if (!hours) return defaultTimes;
+    const toMinutes = (hhmm: string) => {
+      const [h, m] = hhmm.split(":").map(Number);
+      return h * 60 + m;
+    };
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    const build = (mins: number) =>
+      `${pad(Math.floor(mins / 60))}:${pad(mins % 60)}`;
+    const start = toMinutes(hours.open);
+    const end = toMinutes(hours.close);
+    const out: string[] = [];
+    for (let t = start; t <= end; t += 30) {
+      out.push(build(t));
+    }
+    return out;
+  }, [hours]);
 
   const { user } = useAuthStore();
   useEffect(() => {
@@ -74,7 +94,44 @@ export default function ReservationForm({
     };
     fetchSpaces();
   }, [getSpaceOptions]);
-  
+
+  useEffect(() => {
+    // update hours when space changes
+    const sid = Number(formData.spaceId);
+    if (!sid) {
+      setHours(null);
+      return;
+    }
+    // spaceOptions currently holds id->name; reuse API to get full records
+    (async () => {
+      try {
+        const spaces = await (await import("../api/spacesApi")).getSpaces();
+        const found = spaces.find((s: any) => s.id === sid);
+        if (found?.open && found?.close)
+          setHours({ open: found.open, close: found.close });
+        else setHours(null);
+      } catch {
+        setHours(null);
+      }
+    })();
+  }, [formData.spaceId]);
+
+  useEffect(() => {
+    if (!hours) return;
+    const { open, close } = hours;
+    if (
+      formData.startTime &&
+      (formData.startTime < open || formData.startTime > close)
+    ) {
+      setFormData((prev) => ({ ...prev, startTime: "" }));
+    }
+    if (
+      formData.endTime &&
+      (formData.endTime < open || formData.endTime > close)
+    ) {
+      setFormData((prev) => ({ ...prev, endTime: "" }));
+    }
+  }, [hours]);
 
   const [errors, setErrors] = useState<{ time?: string }>({});
 
@@ -86,7 +143,7 @@ export default function ReservationForm({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "guests" ? Number(value) : value,
+      [name]: value,
     }));
   };
 
@@ -99,24 +156,25 @@ export default function ReservationForm({
     }
 
     setErrors({});
-    const userId = user ? user.id : 1;
+    const userId = user ? user.id : undefined;
 
-    const baseData = {
-      ...formData,
+    const payload = {
+      title: formData.title,
       startDate: new Date(
-        `${selectedDate}T${formData.startTime}`
+        `${formData.date}T${formData.startTime}`
       ).toISOString(),
-      endDate: new Date(`${selectedDate}T${formData.endTime}`).toISOString(),
-      userId,
-      spaceId:2,
+      endDate: new Date(`${formData.date}T${formData.endTime}`).toISOString(),
+      request: formData.request,
+      spaceId: Number(formData.spaceId),
+      ...(userId ? { userId } : {}),
     };
 
     try {
       if (reservation) {
-        await updateReservation({ ...baseData, id: reservation.id });
+        await updateReservation({ ...payload, id: reservation.id } as any);
         alert("Reservation updated!");
       } else {
-        await addReservation(baseData);
+        await addReservation(payload as any);
         alert("Reservation created!");
       }
       await getAllReservations();
@@ -136,7 +194,7 @@ export default function ReservationForm({
             </p>
             <div className="flex flex-col-reverse gap-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 h-full pr-1">
               <TimePicker
-                times={availableTimes}
+                times={timesForPicker}
                 startTime={formData.startTime}
                 endTime={formData.endTime}
                 onChange={(start, end) =>
@@ -144,6 +202,11 @@ export default function ReservationForm({
                 }
                 error={errors.time}
               />
+              {hours && (
+                <p className="text-xs text-gray-400">
+                  Working hours: {hours.open} - {hours.close}
+                </p>
+              )}
 
               {errors.time && (
                 <p className="text-red-500 text-xs mt-1">{errors.time}</p>
@@ -203,7 +266,11 @@ export default function ReservationForm({
                   className=" bg-gray-800 border border-gray-700 rounded-lg px-4 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(spaceOptions).map(([id, name]) => (
-                    <option key={id} value={id} className="bg-gray-800 text-white">
+                    <option
+                      key={id}
+                      value={id}
+                      className="bg-gray-800 text-white"
+                    >
                       {name}
                     </option>
                   ))}
